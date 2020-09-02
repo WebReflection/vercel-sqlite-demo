@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Vercel SQLite ip2location demo">
+  <title>Vercel SQLite ip2location demo</title>
+  <script>
+  Promise.all([
+    fetch('api/country').then(b => b.json()),
+    new Promise($ => addEventListener('DOMContentLoaded', $, {once: true}))
+  ]).then(([{code, name}]) => {
+    document.querySelector('p:last-child').innerHTML =
+      `Your request came from <small>(${code})</small> <strong>${name}</strong> 👋`;
+  });
+  </script>
+  <style>
+  body { font-family: sans-serif; }
+  h1 { font-size: medium; }
+  a { color: initial; }
+  </style>
+</head>
+<body>
+  <h1><a href="https://vercel.com/">Vercel</a> SQLite ip2location demo</h1>
+  <p>
+    This site or product includes IP2Location LITE data available from
+    <a href="https://lite.ip2location.com">https://lite.ip2location.com</a>.
+  </p>
+  <p></p>
+</body>
+</html>

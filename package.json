@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "vercel-sqlite-demo",
+  "type": "commonjs",
+  "description": "Vercel SQLite ip2location demo",
+  "author": "Andrea Giammarchi",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite-tag": "^1.1.0",
+    "sqlite3": "^5.0.0"
+  }
+}

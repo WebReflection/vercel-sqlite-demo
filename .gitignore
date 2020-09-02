@@ -1,0 +1,5 @@
+node_modules/
+sqlite/
+IP2LOCATION-LITE-DB1.CSV
+package-lock.json
+.vercel
