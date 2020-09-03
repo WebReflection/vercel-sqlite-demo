@@ -1,24 +1,23 @@
 const {join} = require('path');
 const {now} = require('perf_hooks').performance;
 
-const sqlite3 = require('sqlite3');
+const {Database} = require('sqlite3');
 const SQLiteTag = require('sqlite-tag');
+
+const ip2location = join(__dirname, '..', 'sqlite', 'ip2location.ipv4');
 
 const ipv4 = {
   _: [16777216, 65536, 256, 1],
-  asInt: ip => ip.split('.').reduce(
-    (whole, current, i) => (whole + current * ipv4._[i]),
-    0
-  )
+  $: (whole, current, i) => (whole + current * ipv4._[i]),
+  asInt: ip => ip.split('.').reduce(ipv4.$, 0),
+  asRegExp: /^(?:\d+\.){3}\d+$/
 };
 
 module.exports = async (req, res) => {
   const address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  if (/^(?:\d+\.){3}\d+$/.test(address)) {
+  if (ipv4.asRegExp.test(address)) {
     const time = now();
-    const ip = ipv4.asInt(address);
-    const path = join(__dirname, '..', 'sqlite', `ip2location.ipv4`);
-    const db = new sqlite3.Database(path);
+    const db = new Database(ip2location);
     const {get} = SQLiteTag(db);
     const location = await get`
       SELECT
@@ -27,12 +26,12 @@ module.exports = async (req, res) => {
       FROM
         ip2location
       WHERE
-        ${ip}
+        ${ipv4.asInt(address)}
       BETWEEN ip_from AND ip_to
     `;
-    res.setHeader('X-Queried-In', `${(now() - time).toFixed(2)}ms`);
-    res.json(location || {code: '❔', name: 'Unknown'});
     db.close();
+    res.setHeader('x-served-in', `${(now() - time).toFixed(2)}ms`);
+    res.json(location || {code: '❔', name: 'Unknown'});
   }
   else
     res.json({code: '⚠', name: 'Invalid IP'});
